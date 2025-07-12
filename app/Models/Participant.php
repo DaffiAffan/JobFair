@@ -25,6 +25,7 @@ class Participant extends Model
         'birth_place',
         'birth_date',
         'last_education',
+        'id_ticket',
     ];
 
     protected static function boot()
@@ -36,5 +37,10 @@ class Participant extends Model
                 $participant->id = (string) Str::uuid();
             }
         });
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
     }
 }

@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('participants', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('email');
-            $table->string('phone_number');
+            $table->string('email')->unique();
+            $table->string('phone_number')->unique();
             $table->string('gender');
             $table->string('birth_place');
             $table->string('birth_date');
             $table->string('last_education');
+            $table->string('id_ticket')->unique();
             $table->timestamps();
         });
     }
