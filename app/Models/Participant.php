@@ -24,7 +24,9 @@ class Participant extends Model
         'gender',
         'birth_place',
         'birth_date',
+        'address',
         'last_education',
+        'last_education_institution',
         'id_ticket',
     ];
 

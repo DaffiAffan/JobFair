@@ -26,20 +26,22 @@ class ParticipantController extends Controller
 
 
         $validator = Validator::make($request->all(), [
-            'name'            => 'required|string|max:255',
-            'email'           => 'required|email|unique:participants,email|max:255',
-            'phone_number'    => 'required|numeric|unique:participants,phone_number',
-            'gender'          => 'required|in:Pria,Wanita',
-            'birth_place'     => 'required|string|max:255',
-            'birth_date'      => 'required|date',
-            'last_education'  => 'required|string|max:255',
+            'name'                        => 'required|string|max:255',
+            'email'                       => 'required|email|unique:participants,email|max:255',
+            'phone_number'                => 'required|numeric|unique:participants,phone_number',
+            'gender'                      => 'required|in:Pria,Wanita',
+            'birth_place'                 => 'required|string|max:255',
+            'birth_date'                  => 'required|date',
+            'address'                     => 'required|string|max:255',
+            'last_education'              => 'required|string|max:255',
+            'last_education_institution'  => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'validation_error',
                 'errors' => $validator->errors()
-            ], 422);
+            ], 409);
         }
 
         // Generate UUID dan id_ticket unik
@@ -53,15 +55,17 @@ class ParticipantController extends Controller
 
         // Simpan ke database
         $participant = Participant::create([
-            'id'             => $uuid,
-            'id_ticket'      => $idTicket,
-            'name'           => $request->name,
-            'email'          => $request->email,
-            'phone_number'   => $request->phone_number,
-            'gender'         => $request->gender,
-            'birth_place'    => $request->birth_place,
-            'birth_date'     => $request->birth_date,
-            'last_education' => $request->last_education,
+            'id'                         => $uuid,
+            'id_ticket'                  => $idTicket,
+            'name'                       => $request->name,
+            'email'                      => $request->email,
+            'phone_number'               => $request->phone_number,
+            'gender'                     => $request->gender,
+            'birth_place'                => $request->birth_place,
+            'birth_date'                 => $request->birth_date,
+            'address'                    => $request->address,
+            'last_education'             => $request->last_education,
+            'last_education_institution' => $request->last_education_institution,
         ]);
 
         return response()->json([

@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('gender');
             $table->string('birth_place');
             $table->string('birth_date');
+            $table->string('address');
             $table->string('last_education');
+            $table->string('last_education_institution');
             $table->string('id_ticket')->unique();
             $table->timestamps();
         });
