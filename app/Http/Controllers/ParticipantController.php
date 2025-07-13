@@ -80,7 +80,10 @@ class ParticipantController extends Controller
      */
     public function show(Participant $participant)
     {
-        //
+        return response()->json([
+            'status' => 'success',
+            'data' => $participant
+        ], 200);
     }
 
     /**
