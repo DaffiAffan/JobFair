@@ -24,7 +24,7 @@ class AttendanceController extends Controller
         $today = now()->toDateString();
 
         $alreadyChecked = Attendance::where('participant_id', $participant->id)
-            ->where('attendance_date', $today)
+            ->where('scanned_at', $today)
             ->exists();
 
         if ($alreadyChecked) {
@@ -36,8 +36,6 @@ class AttendanceController extends Controller
 
         Attendance::create([
             'participant_id'   => $participant->id,
-            'attendance_date'  => $today,
-            'session'          => $this->getSessionFromDate($today),
             'scanned_at'       => now(),
         ]);
 
