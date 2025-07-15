@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Participant;
 use Illuminate\Support\Str;
+use App\Exports\ParticipantsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\UpdateParticipantRequest;
@@ -105,5 +107,26 @@ class ParticipantController extends Controller
     public function destroy(Participant $participant)
     {
         //
+    }
+
+    public function export()
+    {
+        $filename = 'Klaten_JobFair_' . now()->setTimezone('Asia/Jakarta')->format('d-m-Y_H.i') . '.xlsx';
+        $path = 'exports/' . $filename;
+
+        try {
+            Excel::store(new ParticipantsExport, $path, 'public');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'File berhasil diexport.',
+                'download_url' => asset('storage/' . $path) // contoh: http://localhost:8000/storage/exports/...
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Export gagal: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
