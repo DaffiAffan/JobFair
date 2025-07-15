@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('participants', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('email')->unique();
             $table->string('phone_number')->unique();
             $table->string('gender');
             $table->string('birth_place');
             $table->string('birth_date');
+            $table->string('district');
+            $table->string('sub_district');
             $table->string('address');
             $table->string('last_education');
-            $table->string('last_education_institution');
+            $table->string('education_major');
             $table->string('id_ticket')->unique();
             $table->timestamps();
         });

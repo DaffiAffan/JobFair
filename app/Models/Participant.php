@@ -19,14 +19,15 @@ class Participant extends Model
     protected $fillable = [
         'id',
         'name',
-        'email',
         'phone_number',
         'gender',
         'birth_place',
         'birth_date',
+        'district',
+        'sub_district',
         'address',
         'last_education',
-        'last_education_institution',
+        'education_major',
         'id_ticket',
     ];
 

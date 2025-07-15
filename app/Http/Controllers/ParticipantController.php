@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\UpdateParticipantRequest;
+use App\Jobs\SendParticipantQrNotification;
 
 class ParticipantController extends Controller
 {
@@ -26,15 +27,16 @@ class ParticipantController extends Controller
 
 
         $validator = Validator::make($request->all(), [
-            'name'                        => 'required|string|max:255',
-            'email'                       => 'required|email|unique:participants,email|max:255',
-            'phone_number'                => 'required|numeric|unique:participants,phone_number',
-            'gender'                      => 'required|in:Pria,Wanita',
-            'birth_place'                 => 'required|string|max:255',
-            'birth_date'                  => 'required|date',
-            'address'                     => 'required|string|max:255',
-            'last_education'              => 'required|string|max:255',
-            'last_education_institution'  => 'required|string|max:255',
+            'name'                         => 'required|string|max:255',
+            'phone_number'                 => 'required|numeric|unique:participants,phone_number',
+            'gender'                       => 'required|in:Pria,Wanita',
+            'birth_place'                  => 'required|string|max:255',
+            'birth_date'                   => 'required|date',
+            'district'                     => 'required|string|max:255',
+            'sub_district'                 => 'required|string|max:255',
+            'address'                      => 'required|string|max:255',
+            'last_education'               => 'required|string|max:255',
+            'education_major'              => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -58,15 +60,18 @@ class ParticipantController extends Controller
             'id'                         => $uuid,
             'id_ticket'                  => $idTicket,
             'name'                       => $request->name,
-            'email'                      => $request->email,
             'phone_number'               => $request->phone_number,
             'gender'                     => $request->gender,
             'birth_place'                => $request->birth_place,
             'birth_date'                 => $request->birth_date,
+            'district'                   => $request->district,
+            'sub_district'               => $request->sub_district,
             'address'                    => $request->address,
             'last_education'             => $request->last_education,
-            'last_education_institution' => $request->last_education_institution,
+            'education_major'            => $request->education_major,
         ]);
+
+        SendParticipantQrNotification::dispatch($participant);
 
         return response()->json([
             'status' => 'success',
