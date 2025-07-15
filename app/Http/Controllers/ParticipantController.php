@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\UpdateParticipantRequest;
-use App\Jobs\SendParticipantQrNotification;
+// use App\Jobs\SendParticipantQrNotification;
 
 class ParticipantController extends Controller
 {
@@ -71,7 +71,7 @@ class ParticipantController extends Controller
             'education_major'            => $request->education_major,
         ]);
 
-        SendParticipantQrNotification::dispatch($participant);
+        // SendParticipantQrNotification::dispatch($participant);
 
         return response()->json([
             'status' => 'success',
