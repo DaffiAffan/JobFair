@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Participant;
 use Illuminate\Support\Str;
-use App\Exports\ParticipantsExport;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\UpdateParticipantRequest;
-// use App\Jobs\SendParticipantQrNotification;
 
 class ParticipantController extends Controller
 {
@@ -79,7 +78,17 @@ class ParticipantController extends Controller
             'education_major'            => $request->education_major,
         ]);
 
-        // SendParticipantQrNotification::dispatch($participant);
+        $qr = QrCode::format('png')->size(400)->generate($participant->id_ticket);
+        $filename = $participant->id_ticket . '.png';
+        $path = storage_path("app/public/qrcodes/{$filename}");
+        file_put_contents($path, $qr);
+
+
+        $this->sendWhatsapp(
+            $participant->phone_number,
+            "Halo {$participant->name}, berikut adalah QR Code untuk keperluan check-in JobFair 2025. ID Tiket: {$participant->id_ticket}",
+            $filename
+        );
 
         return response()->json([
             'status' => 'success',
@@ -113,5 +122,45 @@ class ParticipantController extends Controller
     public function destroy(Participant $participant)
     {
         //
+    }
+
+    public function sendWhatsapp($phone, $message, $imageFilename = null)
+    {
+        $token = env('FONNTE_TOKEN');
+
+        $data = [
+            'target' => $phone,
+            'message' => $message,
+            'delay' => '1-45'
+        ];
+
+        if ($imageFilename) {
+            // production
+            // $data['image'] =  env('APP_URL') . '/storage/qrcodes/' . $imageFilename;
+
+            // testing
+            $data['url'] = 'https://68cf43816f9b.ngrok-free.app/storage/qrcodes/' . $imageFilename;
+        }
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders(['Authorization' => $token])->post('https://api.fonnte.com/send', $data);
+
+            return $response->successful()
+                ? $response->json()
+                : ['status' => false, 'message' => 'Gagal mengirim WA', 'response' => $response->body()];
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            return [
+                'status' => false,
+                'message' => 'Timeout saat menghubungi Fonnte',
+                'error' => $e->getMessage()
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat mengirim WA',
+                'error' => $e->getMessage()
+            ];
+        }
     }
 }
