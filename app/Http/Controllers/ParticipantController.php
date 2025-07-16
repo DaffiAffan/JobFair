@@ -36,7 +36,7 @@ class ParticipantController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'                         => 'required|string|max:255',
-            'phone_number'                 => 'required|numeric|unique:participants,phone_number',
+            'phone_number'                 => 'required|string|unique:participants,phone_number',
             'gender'                       => 'required|in:Pria,Wanita',
             'birth_place'                  => 'required|string|max:255',
             'birth_date'                   => 'required|date',
