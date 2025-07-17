@@ -10,5 +10,5 @@ use App\Http\Controllers\ParticipantController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::apiResource('participants', ParticipantController::class);
 Route::post('/scan', [AttendanceController::class, 'scan']);
+Route::apiResource('participants', ParticipantController::class);
