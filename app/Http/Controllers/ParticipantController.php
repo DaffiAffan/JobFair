@@ -113,7 +113,44 @@ class ParticipantController extends Controller
      */
     public function update(UpdateParticipantRequest $request, Participant $participant)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name'            => 'required|string|max:255',
+            'phone_number'    => 'required|string|unique:participants,phone_number,' . $participant->id,
+            'gender'          => 'required|in:Pria,Wanita',
+            'birth_place'     => 'required|string|max:255',
+            'birth_date'      => 'required|date',
+            'district'        => 'required|string|max:255',
+            'sub_district'    => 'required|string|max:255',
+            'address'         => 'required|string|max:255',
+            'last_education'  => 'required|string|max:255',
+            'education_major' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'validation_error',
+                'errors' => $validator->errors()
+            ], 409);
+        }
+
+        $participant->update([
+            'name'             => $request->name,
+            'phone_number'     => $request->phone_number,
+            'gender'           => $request->gender,
+            'birth_place'      => $request->birth_place,
+            'birth_date'       => $request->birth_date,
+            'district'         => $request->district,
+            'sub_district'     => $request->sub_district,
+            'address'          => $request->address,
+            'last_education'   => $request->last_education,
+            'education_major'  => $request->education_major,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data peserta berhasil diperbarui.',
+            'data' => $participant
+        ], 200);
     }
 
     /**
@@ -121,7 +158,18 @@ class ParticipantController extends Controller
      */
     public function destroy(Participant $participant)
     {
-        //
+
+        $qrPath = storage_path("app/public/qrcodes/{$participant->id_ticket}.png");
+        if (file_exists($qrPath)) {
+            unlink($qrPath);
+        }
+
+        $participant->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data peserta berhasil dihapus.'
+        ], 200);
     }
 
     public function sendWhatsapp($phone, $message, $imageFilename = null)
