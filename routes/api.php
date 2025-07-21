@@ -17,6 +17,6 @@ Route::middleware('auth:api')->group(
     }
 );
 
-
+Route::get('/attendances', [AttendanceController::class, 'index']);
 Route::post('/scan', [AttendanceController::class, 'scan']);
 Route::apiResource('participants', ParticipantController::class);

@@ -8,10 +8,26 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
+    public function index(Request $request)
+    {
+        // Ambil tanggal dari query params, default ke hari ini
+        $date = $request->query('date', now()->toDateString());
+
+        // Ambil data participant yang sudah hadir di tanggal tersebut
+        $attended = Attendance::with('participant')
+            ->whereDate('event_date', $date)
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'date' => $date,
+            'data' => $attended
+        ]);
+    }
+
     public function scan(Request $request)
     {
         $ticket = $request->input('id_ticket');
-
         $participant = Participant::where('id_ticket', $ticket)->first();
 
         if (!$participant) {
@@ -24,7 +40,7 @@ class AttendanceController extends Controller
         $today = now()->toDateString();
 
         $alreadyChecked = Attendance::where('participant_id', $participant->id)
-            ->where('scanned_at', $today)
+            ->where('event_date', $today)
             ->exists();
 
         if ($alreadyChecked) {
@@ -35,8 +51,8 @@ class AttendanceController extends Controller
         }
 
         Attendance::create([
-            'participant_id'   => $participant->id,
-            'scanned_at'       => now(),
+            'participant_id' => $participant->id,
+            'event_date'     => $today,
         ]);
 
         return response()->json([
@@ -44,15 +60,5 @@ class AttendanceController extends Controller
             'message' => 'Check-in berhasil',
             'participant' => $participant
         ]);
-    }
-
-    private function getSessionFromDate($date)
-    {
-        // Ganti dengan tanggal acara kamu
-        return match ($date) {
-            '2025-07-23' => 'hari_1',
-            '2025-07-24' => 'hari_2',
-            default => 'lainnya'
-        };
     }
 }

@@ -16,7 +16,7 @@ class Attendance extends Model
     protected $fillable = [
         'id',
         'participant_id',
-        'scanned_at',
+        'event_date',
     ];
 
     protected static function boot()
