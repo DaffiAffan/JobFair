@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('participant_id')->unique()->constrained()->onDelete('cascade');
-            $table->timestamp('scanned_at')->nullable();
+            $table->foreignUuid('participant_id')->constrained()->onDelete('cascade');
+            $table->date('event_date');
             $table->timestamps();
+
+            $table->index(['participant_id', 'event_date']);
         });
     }
 
@@ -24,6 +26,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attendances');
+        Schema::table('attendances', function (Blueprint $table) {
+            $table->dropIndex(['participant_id', 'event_date']);
+        });
     }
 };
