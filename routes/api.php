@@ -16,8 +16,8 @@ Route::middleware('auth:api')->group(
         Route::post('/refresh', [AuthController::class, 'refresh']);
 
         Route::get('/participants', [ParticipantController::class, 'index']);
-        Route::get('/participants/{participant}', [ParticipantController::class, 'show']);
         Route::put('/participants/{participant}', [ParticipantController::class, 'update']);
+        // Route::get('/participants/{participant}', [ParticipantController::class, 'show']);
         Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy']);
 
         Route::get('/attendances', [AttendanceController::class, 'index']);
@@ -25,5 +25,5 @@ Route::middleware('auth:api')->group(
     }
 
 );
-
+Route::get('/participants/{participant}', [ParticipantController::class, 'show']);
 Route::post('/participants', [ParticipantController::class, 'store']);
